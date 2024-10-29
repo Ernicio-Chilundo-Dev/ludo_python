@@ -45,3 +45,48 @@ def roll_dice():
     global dice_roll
     dice_roll = random.randint(1, 6)
     print(f"Dice rolled: {dice_roll}")
+
+
+# Mover peça
+def move_piece(player):
+    global current_positions
+    new_position = current_positions[player] + dice_roll
+    if new_position >= len(positions[player]):  # Se chegar ao fim do tabuleiro
+        print(f"{player} wins!")
+        pygame.quit()
+        sys.exit()
+    current_positions[player] = new_position
+
+# Desenhar as peças
+def draw_pieces():
+    for player, pos_list in positions.items():
+        for pos in pos_list:
+            row, col = pos
+            color = RED if player == 'player1' else BLUE
+            pygame.draw.circle(screen, color, (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), SQUARE_SIZE // 3)
+
+# Alternar jogadores
+def switch_player():
+    global current_player
+    current_player = 'player1' if current_player == 'player2' else 'player2'
+
+# Loop principal do jogo
+running = True
+while running:
+    draw_board()
+    draw_pieces()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            pygame.quit()
+            sys.exit()
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:  # Rola o dado ao apertar a tecla ESPAÇO
+                roll_dice()
+                move_piece(current_player)
+                switch_player()
+
+    pygame.display.flip()
+    
